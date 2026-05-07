@@ -124,10 +124,11 @@ export default function Home() {
                   
                   <div className="relative z-10">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                      Ready to Take Control?
+                      Ready to <span className="opacity-80">Take Control?</span>
                     </h2>
                     <p className="text-blue-100 mb-10 max-w-xl mx-auto text-lg">
-                      Join users who have optimized their spending and saved an average of $450/month.
+                      Join thousands who have optimized their spending and saved an average of 
+                      <span className="text-white font-semibold"> $350/month</span>.
                     </p>
                     <Link href="/dashboard">
                       <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-12 py-7 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">

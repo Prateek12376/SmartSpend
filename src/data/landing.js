@@ -10,7 +10,7 @@ import {
 // Stats Data
 export const statsData = [
   {
-    value: "50K+",
+    value: "10K+",
     label: "Active Users",
   },
   {
@@ -22,7 +22,7 @@ export const statsData = [
     label: "Uptime",
   },
   {
-    value: "4.9/5",
+    value: "4.7/5",
     label: "User Rating",
   },
 ];
@@ -33,33 +33,33 @@ export const featuresData = [
     icon: <BarChart3 className="h-8 w-8 text-blue-600" />,
     title: "Advanced Analytics",
     description:
-      "Get detailed insights into your spending patterns with AI-powered analytics",
+      "AI-driven insights to help you visualize and understand your spending patterns",
   },
   {
     icon: <Receipt className="h-8 w-8 text-blue-600" />,
     title: "Smart Receipt Scanner",
     description:
-      "Extract data automatically from receipts using advanced AI technology",
+      "Instant data extraction from any receipt using high-precision AI technology",
   },
   {
     icon: <PieChart className="h-8 w-8 text-blue-600" />,
     title: "Budget Planning",
-    description: "Create and manage budgets with intelligent recommendations",
+    description: "Dynamic limits and intelligent recommendations to keep your savings on track",
   },
   {
     icon: <CreditCard className="h-8 w-8 text-blue-600" />,
     title: "Multi-Account Support",
-    description: "Manage multiple accounts and credit cards in one place",
+    description: "Consolidate all your bank accounts and cards into one unified dashboard",
   },
   {
     icon: <Globe className="h-8 w-8 text-blue-600" />,
     title: "Multi-Currency",
-    description: "Support for multiple currencies with real-time conversion",
+    description: "Seamless global spending with real-time conversion and expense tracking",
   },
   {
     icon: <Zap className="h-8 w-8 text-blue-600" />,
     title: "Automated Insights",
-    description: "Get automated financial insights and recommendations",
+    description: "Proactive alerts and personalized tips to optimize your financial health",
   },
 ];
 
