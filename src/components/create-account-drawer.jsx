@@ -13,10 +13,13 @@ import { Loader2 } from 'lucide-react';
 import useFetch from '@/hooks/use-fetch';
 import { createAccount } from '@/actions/dashboard';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const CreateAccountDrawer = ({children}) => {
   const [open, setOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // 1. Add mounting state
+
+  const router = useRouter();
 
   // 2. Set mounted to true on the client
   useEffect(() => {
@@ -27,7 +30,7 @@ const CreateAccountDrawer = ({children}) => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    setValue, 
     watch,
     reset,
   } = useForm({
@@ -56,6 +59,7 @@ const CreateAccountDrawer = ({children}) => {
       toast.success("Account created successfully");
       reset();
       setOpen(false);
+      router.refresh();
     }
   }, [createAccountLoading, newAccount]);
 
@@ -142,7 +146,7 @@ const CreateAccountDrawer = ({children}) => {
                 {createAccountLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
+                    Creating... 
                   </>
                 ) : (
                   "Create Account"

@@ -140,7 +140,7 @@ const TransactionTable = ({transactions}) => {
     )
       return;
 
-    deleteFn(selectedIds);   // from here directly
+    deleteFn(selectedIds);   // from here directly  , if we ckick on delete 
   }
 
   useEffect(() => {
