@@ -2,12 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { endOfDay, format, startOfDay, startOfYear, subDays } from 'date-fns';
+import { endOfDay, format, startOfDay, startOfMonth, startOfYear, subDays } from 'date-fns';
 import React, { useMemo, useState } from 'react'
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
 const DATE_RANGES = {
+  "CURRENT_MONTH": { label: "Current Month", days: "CURRENT_MONTH" }, // ◄── Add this line
   "7D": { label: "Last 7 Days", days: 7 },
   "1M": { label: "Last Month", days: 30 },
   "2M": { label: "Last 2 Months", days: 60 },
@@ -18,7 +19,8 @@ const DATE_RANGES = {
   ALL: { label: "All Time", days: null },
 };
 const AccountChart = ({transactions}) => {
-  const [dateRange, setDateRange]= useState("1M");
+  const [dateRange, setDateRange]= useState("CURRENT_MONTH");
+  
 
   const filteredData = useMemo(()=>{
     const range = DATE_RANGES[dateRange];
@@ -30,6 +32,8 @@ const AccountChart = ({transactions}) => {
       startDate = startOfDay(new Date(0));
     } else if (range.days === "YTD") {
       startDate = startOfYear(now);
+    } else if (range.days === "CURRENT_MONTH") { 
+      startDate = startOfMonth(now); // ◄── Forces the graph start-point to Day 1 of this month
     } else {
       startDate = startOfDay(subDays(now, range.days));
     }
@@ -162,7 +166,20 @@ return (
                   className="text-muted-foreground/80 font-medium"
                 />
                 <Tooltip
-                  formatter={(value) => [`$${Math.abs(value).toFixed(2)}`, undefined]}
+                  formatter={(value, name) => {
+                    const formattedValue = `$${Math.abs(value).toFixed(2)}`;
+                    const isIncome = name === "income" || name === "Income";
+
+                    const style = {
+                      color: isIncome ? "#22c55e" : "#ef4444",
+                      fontWeight: "600",
+                    };
+                  return [
+                    <span style={style} key={name}>{formattedValue}</span>,
+                    isIncome ? "Income" : "Expense"
+                  ];
+                }}
+
                   contentStyle={{
                     backgroundColor: "rgba(255, 255, 255, 0.95)", 
                     border: "1px solid #e2e8f0",
