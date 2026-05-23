@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import ReceiptScanner from './recipt-scanner';
 
 const AddTransactionForm = ({accounts,categories}) => {
 
@@ -64,11 +65,25 @@ const AddTransactionForm = ({accounts,categories}) => {
     (category) => category.type === type
   );
 
+  const handleScanComplete = (scannedData) => {
+    if (scannedData) {
+      setValue("amount", scannedData.amount.toString());
+      setValue("date", new Date(scannedData.date));
+      if (scannedData.description) {
+        setValue("description", scannedData.description);
+      }
+      if (scannedData.category) {
+        setValue("category", scannedData.category);
+      }
+      toast.success("Receipt scanned successfully");
+    }
+  };
 
   return (
-    <div className="w-full bg-white rounded-xl border border-neutral-200 shadow-sm p-6 sm:p-8">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl border border-neutral-100 shadow-lg p-6 sm:p-8">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* AI Receipt Scanner */}
+        <ReceiptScanner onScanComplete={handleScanComplete} />
 
         {/* Type */}
         <div className="space-y-2">
@@ -142,7 +157,7 @@ const AddTransactionForm = ({accounts,categories}) => {
           <label className="text-sm font-medium text-neutral-700">Category</label>
           <Select
             onValueChange={(value) => setValue("category", value)}
-            defaultValue={getValues("category")}
+            value={watch("category")}
           >
             <SelectTrigger className="w-full bg-neutral-50/50">
               <SelectValue placeholder="Select category" />
@@ -240,7 +255,7 @@ const AddTransactionForm = ({accounts,categories}) => {
           </div>
         )}
         
-        {/* ✅ Actions (Now safely nested inside the form and card wrapper) */}
+        {/* Actions*/}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
           <Button
             type="button"
