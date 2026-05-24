@@ -2,7 +2,7 @@
 
 import { Resend } from "resend";
 
-export async function sendEmail({ to, subject, react }) {
+export async function sendEmail({ to, subject, react, attachments = [] }) {
   const resend = new Resend(process.env.RESEND_API_KEY || "");
 
   try {
@@ -11,6 +11,8 @@ export async function sendEmail({ to, subject, react }) {
       to,
       subject,
       react,
+       // Map your binary buffers directly into Resend's structural schema
+      attachments, 
     });
 
     return { success: true, data };

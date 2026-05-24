@@ -3,6 +3,7 @@ import { inngest } from "./client";
 import { sendEmail } from "@/actions/send-email";
 import EmailTemplate from "@/emails/template";
 import { GoogleGenAI } from "@google/genai";
+import { generateMonthlyReportPDF } from "../pdf-generator";
 
 const genAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -311,6 +312,9 @@ export const generateMonthlyReports = inngest.createFunction(
           // Generate AI insights using Gemini 2.5 Flash
           const insights = await generateFinancialInsights(stats, monthName);
 
+           // Generate PDF buffer
+            const pdfBuffer =await generateMonthlyReportPDF(stats,monthName,user.name,insights);
+
           // Dispatch report email
           await sendEmail({
             to: user.email,
@@ -324,6 +328,12 @@ export const generateMonthlyReports = inngest.createFunction(
                 insights,
               },
             }),
+            attachments: [
+              {
+                filename: `Financial-Report-${monthName}.pdf`,
+                content: pdfBuffer.toString("base64"),
+              },
+            ],
           });
         });
       } catch (stepError) {
