@@ -86,7 +86,7 @@ const AccountChart = ({transactions}) => {
   }, [filteredData]);
 
 
-return (
+  return (
     <Card className="w-full shadow-sm border transition-all duration-300 hover:shadow-md bg-card/50 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
         <CardTitle className="text-base font-semibold tracking-tight text-foreground">

@@ -138,12 +138,45 @@ export async function scanReceipt(file) {
     const base64String = Buffer.from(arrayBuffer).toString("base64");
 
     const prompt = `
-      Analyze this receipt image and extract the following information in JSON format:
-      - Total amount (just the number)
+      Analyze this receipt image and extract the following information in JSON format.
+
+      Currency Handling Rules:
+      - Detect the currency symbol or currency name on the receipt.
+      - Prioritize explicit currency symbols ($, ₹, £, €, etc.) over store location or address when determining the currency.
+
+      - If the receipt currency is NOT USD:
+        1. Extract the original total amount from the receipt.
+        2. Convert this raw amount into USD ($) using a realistic approximate market exchange rate (e.g., 1 USD ≈ 96 INR).
+        3. Store ONLY the converted USD value in the "amount" field.
+        4. Mention the original currency conversion briefly inside the description.
+
+      - If the receipt is already in USD:
+        - Extract the amount directly without conversion.
+        - Do not mention currency conversion in the description.
+
+      Extract:
+      - Total amount (USD value only)
       - Date (in ISO format)
       - Description or items purchased (brief summary)
       - Merchant/store name
-      - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense )
+      - Suggested category
+
+      Suggested category must be strictly one of:
+      housing,
+      transportation,
+      groceries,
+      utilities,
+      entertainment,
+      food,
+      shopping,
+      healthcare,
+      education,
+      personal,
+      travel,
+      insurance,
+      gifts,
+      bills,
+      other-expense
 
       Only respond with valid JSON in this exact format:
       {
@@ -154,7 +187,9 @@ export async function scanReceipt(file) {
         "category": "string"
       }
 
-      If it's not a receipt, return an empty object.
+      Do not include markdown, backticks, or extra explanations.
+
+      If the image is not a receipt, return an empty object.
     `;
 
     const result = await genAI.models.generateContent({

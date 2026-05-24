@@ -2,7 +2,11 @@ import { db } from "@/lib/prisma";
 import { inngest } from "./client";
 import { sendEmail } from "@/actions/send-email";
 import EmailTemplate from "@/emails/template";
+import { GoogleGenAI } from "@google/genai";
 
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export const checkBudgetAlerts = inngest.createFunction(
   {
@@ -265,4 +269,174 @@ function calculateNextRecurringDate(startDate, interval) {
       break;
   }
   return next;
+}
+
+
+// 2. Monthly Report  
+export const generateMonthlyReports = inngest.createFunction(
+  {
+    id: "generate-monthly-reports",
+    name: "Generate Monthly Reports",
+    triggers: [
+      {
+        cron: "0 0 1 * *",
+      },
+    ],
+  },
+  async ({ step }) => {
+    // 1. Fetch all users with their accounts
+    const users = await step.run("fetch-users", async () => {
+      return await db.user.findMany({
+        include: { accounts: true },
+      });
+    });
+
+    // 2. Map over each user , we will genrate the monthyl report 
+    for (const user of users) {
+      // We wrap the individual execution in a try-catch pattern inside Inngest
+      // to guarantee that one failing database lookup/email doesn't drop subsequent users.
+      try {
+        await step.run(`generate-report-${user.id}`, async () => {
+
+          if (!user.email) return;
+
+          const lastMonth = new Date();
+          lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+          const stats = await getMonthlyStats(user.id, lastMonth);
+          const monthName = lastMonth.toLocaleString("default", {
+            month: "long",
+          });
+
+          // Generate AI insights using Gemini 2.5 Flash
+          const insights = await generateFinancialInsights(stats, monthName);
+
+          // Dispatch report email
+          await sendEmail({
+            to: user.email,
+            subject: `Your Monthly Financial Report - ${monthName}`,
+            react: EmailTemplate({
+              userName: user.name,
+              type: "monthly-report",
+              data: {
+                stats,
+                month: monthName,
+                insights,
+              },
+            }),
+          });
+        });
+      } catch (stepError) {
+        // Log individual user failures and keep the loop running smoothly
+        console.error(`Failed to process report for user ${user.id}:`, stepError);
+      }
+    }
+
+    return { processed: users.length };
+  }
+);
+
+
+async function getMonthlyStats(userId, month) {
+  const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
+  const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0,23,59,59,999);
+
+  const transactions = await db.transaction.findMany({
+    where: {
+      userId,
+      date: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+  });
+
+  return transactions.reduce(
+    (stats, t) => {
+      const amount = t.amount.toNumber();
+      if (t.type === "EXPENSE") {
+        stats.totalExpenses += amount;
+        stats.byCategory[t.category] =
+          (stats.byCategory[t.category] || 0) + amount;
+      } else {
+        stats.totalIncome += amount;
+      }
+      return stats;
+    },
+    {
+      totalExpenses: 0,
+      totalIncome: 0,
+      byCategory: {},
+      transactionCount: transactions.length,
+    }
+  );
+}
+
+
+//  for gerating the insights 
+async function generateFinancialInsights(stats, month) {
+  const prompt = `
+    Analyze this financial data and provide 3 concise, actionable insights.
+    Focus on spending patterns and practical advice.
+    Keep it friendly and conversational.
+
+    Financial Data for ${month}:
+    - Total Income: $${stats.totalIncome}
+    - Total Expenses: $${stats.totalExpenses}
+    - Net Income: $${stats.totalIncome - stats.totalExpenses}
+
+    - Expense Categories:
+    ${Object.entries(stats.byCategory)
+      .map(
+        ([category, amount]) =>
+          `${category}: $${amount}`
+      )
+      .join("\n")}
+
+    Return ONLY a valid JSON array of strings.
+
+    Example:
+    [
+      "Insight 1",
+      "Insight 2",
+      "Insight 3"
+    ]
+
+    Do not include markdown or extra text.
+  `;
+
+  try {
+    const result = await genAI.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          text: prompt,
+        },
+      ],
+    });
+
+    const text = result.text;
+
+    // Remove markdown formatting if Gemini wraps JSON
+    const cleanedText = text
+      .replace(/```(?:json)?\n?/g, "")
+      .trim();
+
+    const insights = JSON.parse(cleanedText);
+
+    return Array.isArray(insights)
+      ? insights
+      : [];
+  } catch (error) {
+    console.error(
+      "Error generating insights:",
+      error.message
+    );
+
+    return [
+      "Your highest spending category may need closer attention.",
+      "Consider setting a stricter monthly budget to improve savings.",
+      "Tracking recurring expenses can help identify saving opportunities.",
+    ];
+  }
 }
