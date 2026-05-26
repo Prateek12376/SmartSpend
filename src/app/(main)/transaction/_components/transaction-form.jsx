@@ -284,14 +284,14 @@ const AddTransactionForm = ({accounts,categories,editMode = false,initialData = 
           <Button
             type="button"
             variant="outline"
-            className="w-full text-neutral-600 hover:bg-neutral-50"
+            className="flex-1 text-neutral-600 hover:bg-neutral-50"
             onClick={() => router.back()}
           >
             Cancel
           </Button>
           <Button 
             type="submit" 
-            className="w-full bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
+            className="flex-1 bg-neutral-900 text-white hover:bg-neutral-800 transition-colors"
             disabled={transactionLoading}
           >
             {transactionLoading ? (
