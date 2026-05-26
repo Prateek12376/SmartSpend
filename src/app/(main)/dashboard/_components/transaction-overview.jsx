@@ -132,19 +132,19 @@ const DashboardOverview = ({ accounts, transactions }) => {
 
        {/* for Pie chart / month */}
 
-      <Card className="transition-all hover:shadow-md rounded-2xl">
+      <Card className="transition-all hover:shadow-md rounded-2xl flex flex-col justify-between">
         <CardHeader>
           <CardTitle className="text-base font-normal">
             Monthly Expense Breakdown
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 pb-5">
+        <CardContent className="p-4 px-2 sm:p-6 pt-0 pb-6 flex-1 flex flex-col justify-between">
           {pieChartData.length === 0 ? (
             <p className="py-4 text-center text-muted-foreground">
               No expenses this month
             </p>
           ) : (
-            <div className="h-75">
+            <div className="h-80 w-full min-h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -154,9 +154,9 @@ const DashboardOverview = ({ accounts, transactions }) => {
                     }))}
                     cx="50%"
                     cy="45%"
-                    outerRadius={110}
-                    innerRadius={70}
-                    paddingAngle={2}
+                    outerRadius="75%"
+                    innerRadius="50%"
+                    paddingAngle={3}
                     dataKey="value"
                     nameKey="name"
                     label={false}

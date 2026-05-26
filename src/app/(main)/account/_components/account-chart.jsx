@@ -107,7 +107,7 @@ const AccountChart = ({transactions}) => {
       </CardHeader>
       <CardContent>
         {/* KPI Metrics Display Row */}
-        <div className="grid grid-cols-3 gap-4 mb-6 text-sm bg-muted/40 p-4 rounded-xl border border-dashed border-muted-foreground/20">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-6 text-sm bg-muted/40 p-4 rounded-xl border border-dashed border-muted-foreground/20">
           <div className="text-center space-y-1">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Income</p>
             <p className="text-lg font-bold text-emerald-500 tracking-tight">

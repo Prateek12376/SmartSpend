@@ -280,7 +280,7 @@ const AddTransactionForm = ({accounts,categories,editMode = false,initialData = 
         )}
         
         {/* Actions*/}
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t border-neutral-100">
           <Button
             type="button"
             variant="outline"

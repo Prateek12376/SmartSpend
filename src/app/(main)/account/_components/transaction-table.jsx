@@ -170,8 +170,8 @@ const TransactionTable = ({transactions}) => {
       )}
       
       {/* filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1 flex items-center">
+      <div className="flex flex-col lg:flex-row gap-3 w-full">
+        <div className="relative flex-1 min-w-0 w-full">
           <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input className="pl-10"
             placeholder="Search transactions..."
@@ -183,7 +183,7 @@ const TransactionTable = ({transactions}) => {
             }}
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
           <Select
             value={typeFilter}
             onValueChange={(value) => {
@@ -191,7 +191,7 @@ const TransactionTable = ({transactions}) => {
               setCurrentPage(1); 
             }}
           >
-            <SelectTrigger className="w-32.5" >
+            <SelectTrigger className="flex-1 sm:flex-initial w-full sm:w-40 min-w-35 h-10 bg-white" >
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
@@ -208,7 +208,7 @@ const TransactionTable = ({transactions}) => {
               
             }}
           >
-            <SelectTrigger className="w-32.5" >
+            <SelectTrigger className="flex-1 sm:flex-initial w-full sm:w-44 min-w-41.25 h-10 bg-white" >
               <SelectValue placeholder="All Transactions" />
             </SelectTrigger>
             <SelectContent>
@@ -218,7 +218,7 @@ const TransactionTable = ({transactions}) => {
           </Select>
 
           {selectedIds.length>0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-auto sm:ml-0">
               <Button 
                 variant='destructive' 
                 size='sm' 
@@ -243,158 +243,160 @@ const TransactionTable = ({transactions}) => {
       </div>
 
       {/* Transactions */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12.5">
-              <Checkbox 
-                onCheckedChange={handleSelectAll}
-                checked={selectedIds.length === paginatedTransactions.length && paginatedTransactions.length > 0}
-              />
-              </TableHead>
-              <TableHead className="cursor-pointer"
-              onClick={()=> handleSort("date")}
-              >
-                <div className='flex items-center'>
-                  Date{" "}
-                  {sortConfig.field==='date'&&
-                    (sortConfig.direction==="asc" ? 
-                    (<ChevronUp className='ml-1 h-4 w-4'/>
-                    ):(
-                    <ChevronDown className='ml-1 h-4 w-4'/>
-                  ))}
-                </div>
-              </TableHead>
-
-              <TableHead>Description</TableHead>
-
-              <TableHead className="cursor-pointer"
-              onClick={()=> handleSort("category")}
-              >
-                <div className='flex items-center'>
-                  Category{" "}
-                  {sortConfig.field==='category'&&
-                    (sortConfig.direction==="asc" ? 
-                    (<ChevronUp className='ml-1 h-4 w-4'/>
-                    ):(
-                    <ChevronDown className='ml-1 h-4 w-4'/>
-                  ))}
-                </div>
-              </TableHead>
-
-              <TableHead className="cursor-pointer"
-              onClick={()=> handleSort("amount")}
-              >
-                <div className='flex items-center justify-end'>
-                  Amount{" "}
-                  {sortConfig.field==='amount'&&
-                    (sortConfig.direction==="asc" ? 
-                    (<ChevronUp className='ml-1 h-4 w-4'/>
-                    ):(
-                    <ChevronDown className='ml-1 h-4 w-4'/>
-                  ))}
-                </div>
-              </TableHead>
-
-              <TableHead>Recurring</TableHead>
-              <TableHead className='w-12.5'/>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedTransactions.length===0?(
+      <div className="rounded-xl border bg-white overflow-hidden shadow-sm">
+        <div className="w-full overflow-x-auto">
+          <Table className="min-w-212.5 lg:min-w-full">
+            <TableHeader className="bg-neutral-50">
               <TableRow>
-                <TableCell colSpan={7} className='text-center text-muted-foreground'>
-                  No Transactions Found 
-                </TableCell>
-              </TableRow>
-            ):(
-              paginatedTransactions.map((transaction)=>(
-                <TableRow key={transaction.id}>
-                  <TableCell>
-                    <Checkbox onCheckedChange={()=>handleSelect(transaction.id)}
-                      checked={selectedIds.includes(transaction.id)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(transaction.date),"PP")}
-                  </TableCell>
-                  <TableCell>{transaction.description}</TableCell>
-                  <TableCell className='capitalize'>
-                    <span style ={{
-                      background : categoryColors[transaction.category],
-                    }}
-                    className='px-2 py-1 rounded  text-white text-sm'
-                    >
-                      {transaction.category}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right font-medium" 
-                  style ={{
-                    color : transaction.type==='EXPENSE'? "red" : "green"
-                  }}>
-                    {transaction.type==='EXPENSE'? "-" : "+"}
-                    ${transaction.amount.toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    {transaction.isRecurring? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge variant='outline' 
-                              className='gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200'>
-                              <RefreshCcw className='h-3 w-3'/>
-                              {RECURRING_INTERVALS[transaction.recurringInterval]}
-                          </Badge>
-                      </TooltipTrigger>
-                          <TooltipContent>
-                            <div className='text-sm'>
-                              <div className='font-medium'>Next Date:</div>
-                              <div>
-                                {format(new Date(transaction.nextRecurringDate),"PP")}
+                <TableHead className="w-12 text-center">
+                <Checkbox 
+                  onCheckedChange={handleSelectAll}
+                  checked={selectedIds.length === paginatedTransactions.length && paginatedTransactions.length > 0}
+                />
+                </TableHead>
+                <TableHead className="cursor-pointer select-none w-32"
+                onClick={()=> handleSort("date")}
+                >
+                  <div className='flex items-center gap-1 font-semibold text-neutral-900'>
+                    Date{" "}
+                    {sortConfig.field==='date'&&
+                      (sortConfig.direction==="asc" ? 
+                      (<ChevronUp className='h-4 w-4'/>
+                      ):(
+                      <ChevronDown className='h-4 w-4'/>
+                      ))}
+                  </div>
+                </TableHead>
 
-                              </div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ):(<Badge variant='outline' className='gap-1'>
-                        <Clock className='h-3 w-3'/>
-                        One-time
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className='h-8 w-8 p-0'>
-                          <MoreHorizontalIcon className='h-4 w-4'/>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                          <DropdownMenuItem
-                            onClick={()=>
-                              router.push(
-                                `/transaction/create?edit=${transaction.id}`
-                              )
-                            }
-                          >
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className='text-destructive' 
-                          onClick={()=>deleteFn([transaction.id])}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <TableHead className="font-semibold text-neutral-900">Description</TableHead>
+
+                <TableHead className="cursor-pointer select-none w-36"
+                onClick={()=> handleSort("category")}
+                >
+                  <div className='flex items-center gap-1 font-semibold text-neutral-900'>
+                    Category{" "}
+                    {sortConfig.field==='category'&&
+                      (sortConfig.direction==="asc" ? 
+                      (<ChevronUp className='h-4 w-4'/>
+                      ):(
+                      <ChevronDown className='h-4 w-4'/>
+                      ))}
+                  </div>
+                </TableHead>
+
+                <TableHead className="cursor-pointer select-none w-36 text-right"
+                onClick={()=> handleSort("amount")}
+                >
+                  <div className='flex items-center justify-end gap-1 font-semibold text-neutral-900'>
+                    Amount{" "}
+                    {sortConfig.field==='amount'&&
+                      (sortConfig.direction==="asc" ? 
+                      (<ChevronUp className='h-4 w-4'/>
+                      ):(
+                      <ChevronDown className='h-4 w-4'/>
+                      ))}
+                  </div>
+                </TableHead>
+
+                <TableHead className="font-semibold text-neutral-900 w-36">Recurring</TableHead>
+                <TableHead className='w-12'/>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedTransactions.length===0?(
+                <TableRow>
+                  <TableCell colSpan={7} className='text-center h-24 text-muted-foreground font-medium'>
+                    No Transactions Found 
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ):(
+                paginatedTransactions.map((transaction)=>(
+                  <TableRow key={transaction.id} className="hover:bg-neutral-50/50 transition-colors">
+                    <TableCell className="text-center">
+                      <Checkbox onCheckedChange={()=>handleSelect(transaction.id)}
+                        checked={selectedIds.includes(transaction.id)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {format(new Date(transaction.date),"PP")}
+                    </TableCell>
+                    <TableCell className="max-w-55 truncate font-medium text-neutral-700">{transaction.description}</TableCell>
+                    <TableCell className='capitalize'>
+                      <span style ={{
+                        background : categoryColors[transaction.category],
+                      }}
+                      className='px-2.5 py-0.5 rounded-full text-white text-xs font-semibold shadow-sm tracking-wide'
+                      >
+                        {transaction.category}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right font-bold tracking-tight" 
+                    style ={{
+                      color : transaction.type==='EXPENSE'? "#ef4444" : "#10b981"
+                    }}>
+                      {transaction.type==='EXPENSE'? "-" : "+"}
+                      ${transaction.amount.toFixed(2)}
+                    </TableCell>
+                    <TableCell>
+                      {transaction.isRecurring? (
+                        <TooltipProvider delayDuration={150}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge variant='outline' 
+                                className='gap-1 bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 rounded-full font-medium py-0.5 cursor-pointer'>
+                                <RefreshCcw className='h-3 w-3'/>
+                                {RECURRING_INTERVALS[transaction.recurringInterval]}
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-neutral-900 text-white p-2 rounded-lg shadow-md">
+                              <div className='text-xs space-y-0.5'>
+                                <div className='font-semibold opacity-80'>Next Date:</div>
+                                <div className="font-bold text-purple-300">
+                                  {format(new Date(transaction.nextRecurringDate),"PP")}
+                                </div>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ):(<Badge variant='outline' className='gap-1 text-muted-foreground bg-neutral-50 rounded-full font-medium py-0.5'>
+                          <Clock className='h-3 w-3'/>
+                          One-time
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className='h-8 w-8 p-0 hover:bg-neutral-100 rounded-full'>
+                            <MoreHorizontal className='h-4 w-4'/>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl shadow-md border-neutral-100">
+                            <DropdownMenuItem
+                              className="cursor-pointer font-medium py-2 rounded-md"
+                              onClick={()=>
+                                router.push(
+                                  `/transaction/create?edit=${transaction.id}`
+                                )
+                              }
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className='text-destructive cursor-pointer font-medium py-2 rounded-md focus:bg-destructive/10' 
+                            onClick={()=>deleteFn([transaction.id])}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       {/* ─── PAGINATION SECTION NAVIGATION BAR ─── */}
       {totalPages > 1 && (
