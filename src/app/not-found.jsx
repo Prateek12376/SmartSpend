@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    // ✨ Changed min-h-[100vh] to min-h-screen
     <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-background">
       <div className="relative mb-8">
         <h1 className="text-9xl font-extrabold text-muted-foreground/20 select-none">

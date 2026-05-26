@@ -40,7 +40,6 @@ export default function Home() {
                 className="p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] border-gray-100 hover:border-blue-200"
               >
                 <CardContent className="space-y-4 pt-4">
-                  {/* Ensure your icons have a wrapper for a subtle tilt on hover */}
                   <div className="text-blue-600 transition-transform duration-300 group-hover:scale-110">
                     {feature.icon}
                   </div>
@@ -56,20 +55,19 @@ export default function Home() {
 
       {/* How It Works Section */}
       <section className="py-24 relative overflow-hidden">
-        {/* Add a subtle background decoration */}
+
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,#eff6ff_0%,transparent_50%)]" />
-        
+
         <div className="container mx-auto px-4 relative">
           <h2 className="text-4xl font-bold text-center mb-20">Master Your Money in 3 Steps</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {howItWorksData.map((step, index) => (
               <div key={index} className="text-center relative">
-                {/* Connecting arrow/line for desktop */}
                 {index < 2 && (
                   <div className="hidden lg:block absolute top-8 left-[60%] w-full border-t-2 border-dashed border-blue-200" />
                 )}
                 <div className="w-20 h-20 bg-linear-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-blue-200 -rotate-3 hover:rotate-0 transition-transform duration-300">
-                  {/* White-out the icons for better contrast on the gradient bg */}
+
                   <div className="text-white">
                     {React.cloneElement(step.icon, { className: "h-10 w-10", text: "white" })}
                   </div>
@@ -119,7 +117,7 @@ export default function Home() {
             <section className="py-20">
               <div className="container mx-auto px-4">
                 <div className="bg-linear-to-r from-blue-600 to-purple-700 rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden group">
-                  {/* Animated background circle */}
+
                   <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-150" />
                   
                   <div className="relative z-10">
